@@ -1122,7 +1122,7 @@ var Presets = function(data, unit) {
     
     var priorities = data.priority.length > 0 ? data.priority : Object.keys(data.radios);
 
-    if (ac == 'AH-64D') {
+    if (['AH-64D', 'C-130J-30'].includes(ac)) {
     } else if (priorities.length > 0) {
 
       var col_group = '<col width=40px /><col width=85px/><col width=250px/><col width=18px/>'.repeat(priorities.length-1)
@@ -1168,10 +1168,12 @@ var Presets = function(data, unit) {
     }
 
     // For the AH64, we yeet this up manually, ugh
-    if (ac == 'AH-64D') {
+    if (['AH-64D', 'C-130J-30'].includes(ac)) {
 
       var priorities = data.priority.length ? data.priority : Object.keys(data.radios);
       for (var start of [0, 2]) {
+
+        var presets = Object.values(data.radios[priorities[start]]).length
 
         var html = `
         <div style="height:20px"></div>
@@ -1188,7 +1190,7 @@ var Presets = function(data, unit) {
               <th colspan=3>${priorities[start+1]}</th>
             </tr>`;
 
-        for (var x = 1; x <= 10; x++) {
+        for (var x = 1; x <= presets; x++) {
           let label = x;
           let label_cls = "";
           let pst = data.radios[priorities[start]][x];

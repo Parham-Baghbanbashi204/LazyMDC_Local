@@ -642,6 +642,14 @@ MissionProcessor = function() {
       'AH-64D': ['V', 'U', 'FM1', 'FM2'],
       'OH58D': ['UHF', 'VHF', 'FM1', 'FM2'],
       'UH-60L': ['FM1', 'UHF', 'VHF', 'FM2', 'HF'],
+      'C-130J-30': ['U1', 'V1'],
+    }
+
+    var radio_duplicates = {
+      'C-130J-30': {
+        'U1': ['U2'],
+        'V1': ['V2'],
+      }
     }
 
     var errors = [];
@@ -714,12 +722,19 @@ MissionProcessor = function() {
                 } catch {}
 
                 info[radio_name] = {};
+                let dupes = radio_duplicates?.[type]?.[radio_name] ?? [];
+                for (const dup_radio_name of dupes) {
+                  info[dup_radio_name] = {}
+                }
 
                 for (const [preset_id, preset_value] of Object.entries(data.channels)) {
 
                   var value = preset_value.toFixed(3);
                   info[radio_name][preset_id] = value;
-              }
+                  for (const dup_radio_name of dupes) {
+                    info[dup_radio_name][preset_id] = value;
+                  }
+                }
             }
 
             maps[coalition][type]['units'].push(
