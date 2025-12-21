@@ -22,7 +22,7 @@ RUN apt-get update \
 			libxfixes3 \
 			libxkbcommon0 \
 			libxrandr2 \
-			xcb \
+			libxcb1 \
 		&& rm -rf /var/lib/apt/lists/*
 
 COPY etc/requirements.txt /tmp/

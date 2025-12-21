@@ -1,0 +1,59 @@
+---
+services:
+  frontend:
+    image: mdcapi/frontend
+    build:
+      context: frontend
+    # Local dev: publish the web UI to your host
+    ports:
+      - "8080:80"
+    # Persist generated files locally
+    volumes:
+      - ./data/cache:/var/www/html/cache
+      - ./data/mdcs:/var/www/html/mdcs
+      - ./data/mdc_images:/var/www/html/mdc_images
+    networks:
+      - api
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  api:
+    image: mdcapi/api
+    build:
+      context: api
+    # Local dev: publish the API (useful for debugging; UI can still work without this)
+    ports:
+      - "5001:5001"
+    environment:
+      MDC_API_CONFIG: /data/app.conf
+    volumes:
+      - ./etc/app.conf:/data/app.conf
+    networks:
+      - api
+      - db
+    depends_on:
+      - database
+    restart: unless-stopped
+
+  database:
+    image: mariadb:11
+    # Optional: expose DB to host (remove if you don't need it)
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data/db:/var/lib/mysql
+      # Runs ONLY on first init (empty ./data/db)
+      - ./api/mdc_api.sql:/docker-entrypoint-initdb.d/01_mdc_api.sql:ro
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_USER: mdc_api
+      MARIADB_PASSWORD: mdc_api
+      MARIADB_DATABASE: mdc_api
+    networks:
+      - db
+    restart: unless-stopped
+
+networks:
+  api:
+  db:

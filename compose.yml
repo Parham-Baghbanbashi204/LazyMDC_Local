@@ -1,5 +1,4 @@
 ---
-
 services:
   frontend:
     image: mdcapi/frontend
@@ -31,7 +30,7 @@ services:
     environment:
       MDC_API_CONFIG: /data/app.conf
     volumes:
-       - ./etc/app.conf:/data/app.conf
+      - ./etc/app.conf:/data/app.conf
     networks:
       - api
       - db
