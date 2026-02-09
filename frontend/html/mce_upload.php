@@ -3,22 +3,42 @@
   /*********************************************
    * Change this line to set the upload folder *
    *********************************************/
-  $imageFolder = "mdc_images/";
+    $imageFolder = "mdc_images/";
 
   if (isset($_SERVER['HTTP_ORIGIN'])) {
 
-    // If our server_name matches our origin, we're good for this use case
-    // to prevent Cross site requests
-
     $origin_host = parse_url($_SERVER['HTTP_ORIGIN'], PHP_URL_HOST);
-		error_log($origin_host . ' -> ' . $_SERVER['HTTP_HOST']);
-    if ($origin_host == $_SERVER['HTTP_HOST']) {
+
+    // HTTP_HOST may include port (e.g. localhost:8080). Compare host-only.
+    $http_host = $_SERVER['HTTP_HOST'];
+    $http_host_no_port = preg_replace('/:\d+$/', '', $http_host);
+
+    error_log($origin_host . ' -> ' . $http_host);
+
+    if ($origin_host === $http_host_no_port) {
       header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
     } else {
       header("HTTP/1.1 403 Origin Denied");
       return;
     }
   }
+
+  // $imageFolder = "mdc_images/";
+
+  // if (isset($_SERVER['HTTP_ORIGIN'])) {
+
+  //   // If our server_name matches our origin, we're good for this use case
+  //   // to prevent Cross site requests
+
+  //   $origin_host = parse_url($_SERVER['HTTP_ORIGIN'], PHP_URL_HOST);
+	// 	error_log($origin_host . ' -> ' . $_SERVER['HTTP_HOST']);
+  //   if ($origin_host == $_SERVER['HTTP_HOST']) {
+  //     header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+  //   } else {
+  //     header("HTTP/1.1 403 Origin Denied");
+  //     return;
+  //   }
+  // }
 
   // Don't attempt to process the upload on an OPTIONS request
   if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
